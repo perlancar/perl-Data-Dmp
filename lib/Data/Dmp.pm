@@ -98,7 +98,9 @@ sub _dump {
         }
         $res .= "}";
     } elsif ($ref eq 'SCALAR') {
-        $res = "\\("._dump($$val).")";
+        $res = "\\"._dump($$val);
+    } elsif ($ref eq 'REF') {
+        $res = "\\"._dump($$val);
     } else {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
