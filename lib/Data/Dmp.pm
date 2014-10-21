@@ -30,7 +30,7 @@ my %esc = (
 );
 
 # put a string value in double quotes
-sub double_quote {
+sub _double_quote {
     local($_) = $_[0];
 
     # If there are many '"' we might want to use qq() instead
@@ -59,7 +59,7 @@ sub _dump {
         } elsif (looks_like_number($val)) {
             return $val;
         } else {
-            return double_quote($val);
+            return _double_quote($val);
         }
     }
     my $refaddr = refaddr($val);
@@ -92,7 +92,7 @@ sub _dump {
         my $i = 0;
         for (sort keys %$val) {
             $res .= ", " if $i++;
-            my $k = /\W/ ? double_quote($_) : $_;
+            my $k = /\W/ ? _double_quote($_) : $_;
             my $v = _dump($val->{$_}, "$subscript\{$k}");
             $res .= "$k=>$v";
         }
@@ -105,7 +105,7 @@ sub _dump {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
 
-    $res = "bless($res, ".double_quote($class).")" if defined($class);
+    $res = "bless($res, "._double_quote($class).")" if defined($class);
     $res;
 }
 
