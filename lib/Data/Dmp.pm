@@ -112,6 +112,7 @@ sub _dump {
 our $_is_dd;
 sub _dd_or_dmp {
     local %_seen_refaddrs;
+    local %_subscripts;
     local @_fixups;
 
     my $res;
