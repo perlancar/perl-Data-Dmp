@@ -1,5 +1,12 @@
 Revision history for Data-Dmp
 
+0.02    2014-10-24 (PERLANCAR)
+
+	- Add module: Data::Dmp::Simple.
+
+	- Bugfix: localize %_subscripts.
+
+
 0.01     2014-10-21 (PERLANCAR)
 
          - First release.
