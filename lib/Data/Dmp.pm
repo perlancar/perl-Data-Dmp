@@ -101,6 +101,8 @@ sub _dump {
         $res = "\\"._dump($$val, $subscript);
     } elsif ($ref eq 'REF') {
         $res = "\\"._dump($$val, $subscript);
+    } elsif ($ref eq 'CODE') {
+        $res = "sub{'DUMMY'}";
     } else {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
