@@ -1,5 +1,12 @@
 Revision history for Data-Dmp
 
+0.04    2014-12-28 (PERLANCAR)
+
+	- No functional changes.
+
+	- Some wording and fmt changes.
+
+
 0.03    2014-12-19 (PERLANCAR)
 
 	- Dump coderef as "sub{'DUMMY'}".
