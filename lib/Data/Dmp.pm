@@ -154,28 +154,30 @@ experiment. I want some of Data::Dump's features which I currently need and
 don't need the others that I currently do not need. I also want a smaller code
 base so I can easily modify (or subclass) it for custom dumping requirements.
 
-Compared to Data::Dump, Data::Dmp is also pure-Perl, dumps Perl data structure
-as runnable Perl code, supports circular/blessed references. Unlike Data::Dump,
-Data::Dmp does not identify tied data, does not support globs, does not support
-filtering, and mostly does not bother to align hash keys, identify
-ranges/repetition pattern. This makes the code simpler.
+Compared to C<Data::Dump>, C<Data::Dmp> is also pure-Perl, dumps Perl data
+structure as runnable Perl code, supports circular/blessed references. Unlike
+C<Data::Dump>, C<Data::Dmp> does not identify tied data, does not support globs,
+does not support filtering, and mostly does not bother to align hash keys,
+identify ranges/repetition pattern. This makes the code simpler.
 
-I originally created Data::Dmp when wanting to write L<Data::Dmp::Org>. At first
-I tried to modify Data::Dump, but then got distracted by the extra bits that I
-don't need.
+I originally created C<Data::Dmp> when wanting to write L<Data::Dmp::Org>. At
+first I tried to modify C<Data::Dump>, but then got distracted by the extra bits
+that I don't need.
 
 
 =head1 FUNCTIONS
 
 =head2 dd($data, ...) => $data ...
 
-Exported by default. Like Data::Dump's dd, print one or more data to STDOUT.
-Unlike Data::Dump's dd, it I<always> prints and return I<the original data>
-(like L<XXX>), making it convenient to insert into expressions.
+Exported by default. Like C<Data::Dump>'s C<dd> (a.k.a. C<dump>), print one or
+more data to STDOUT. Unlike C<Data::Dump>'s C<dd>, it I<always> prints and
+return I<the original data> (like L<XXX>), making it convenient to insert into
+expressions. This also removes ambiguity and saves one C<wantarray()> call.
 
 =head2 dmp($data, ...) => $str
 
-Exported by default. Return dump result as string.
+Exported by default. Return dump result as string. Unlike C<Data::Dump>'s C<dd>
+(a.k.a. C<dump>), it I<never> prints and only return the data.
 
 
 =head1 SEE ALSO
