@@ -72,6 +72,14 @@ sub _dump {
     }
 
     my $class;
+
+    if ($ref eq 'Regexp' || $ref eq 'REGEXP') {
+        require re;
+        my ($pat, $mod) = re::regexp_pattern($val);
+        $pat =~ s|(?<!\\)(\\\\)*/|$1\\/|g; # escape non-escaped slashes
+        return "qr/$pat/$mod";
+    }
+
     if (blessed $val) {
         $class = $ref;
         $ref = reftype($val);
