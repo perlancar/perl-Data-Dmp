@@ -1,5 +1,12 @@
 Revision history for Data-Dmp
 
+0.06    2015-01-02 (PERLANCAR)
+
+        - Dump regexp object as qr/.../ instead of bless(...).
+
+        - Add coderef dumping support to Data::Dmp::Simple too.
+
+
 0.05    2014-12-28 (PERLANCAR)
 
 	- No functional changes.
