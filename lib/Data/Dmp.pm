@@ -18,6 +18,8 @@ our %_seen_refaddrs;
 our %_subscripts;
 our @_fixups;
 
+our $OPT_PERL_VERSION;
+
 # BEGIN COPY PASTE FROM Data::Dump
 my %esc = (
     "\a" => "\\a",
@@ -74,10 +76,9 @@ sub _dump {
     my $class;
 
     if ($ref eq 'Regexp' || $ref eq 'REGEXP') {
-        require re;
-        my ($pat, $mod) = re::regexp_pattern($val);
-        $pat =~ s|(?<!\\)((?:\\\\)*)/|$1\\/|g; # escape non-escaped slashes
-        return "qr/$pat/$mod";
+        require Regexp::Stringify;
+        return Regexp::Stringify::stringify_regexp(
+            regexp=>$val, with_qr=>1, plver=>$OPT_PERL_VERSION);
     }
 
     if (blessed $val) {
@@ -186,6 +187,15 @@ expressions. This also removes ambiguity and saves one C<wantarray()> call.
 
 Exported by default. Return dump result as string. Unlike C<Data::Dump>'s C<dd>
 (a.k.a. C<dump>), it I<never> prints and only return the data.
+
+
+=head1 SETTINGS
+
+=head2 $Data::Dmp::OPT_PERL_VERSION => str
+
+Set target Perl version. Currently this is used when passing to
+L<Regexp::Stringify>. If you set this to, say C<5.010>, then the dumped code
+will keep compatibility with Perl 5.10.0.
 
 
 =head1 BENCHMARKS
