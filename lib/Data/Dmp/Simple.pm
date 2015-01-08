@@ -40,8 +40,9 @@ sub _dump {
     }
 
     if ($ref eq 'Regexp' || $ref eq 'REGEXP') {
-        return Regexp::Stringify::stringify_regex(
-            regexp=>$val, with_qr=>1, plver=>5.010);
+        require Regexp::Stringify;
+        return Regexp::Stringify::stringify_regexp(
+            regexp=>$val, with_qr=>1, plver=>$OPT_PERL_VERSION);
     }
 
     my $class;
