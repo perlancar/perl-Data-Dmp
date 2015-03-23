@@ -144,7 +144,7 @@ sub _dd_or_dmp {
     }
 }
 
-sub dd { local $_is_dd=1; _dd_or_dmp(@_) }
+sub dd { local $_is_dd=1; _dd_or_dmp(@_) } # goto &sub doesn't work here
 sub dmp { goto &_dd_or_dmp }
 
 1;
