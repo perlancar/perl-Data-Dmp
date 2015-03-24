@@ -67,8 +67,7 @@ sub _dump {
     my $refaddr = refaddr($val);
     $_subscripts{$refaddr} //= $subscript;
     if ($_seen_refaddrs{$refaddr}++) {
-        push @_fixups, " " if @_fixups;
-        push @_fixups, "\$a->$subscript = \$a",
+        push @_fixups, "\$a->$subscript=\$a",
             ($_subscripts{$refaddr} ? "->$_subscripts{$refaddr}" : ""), ";";
         return "'fix'";
     }
@@ -91,7 +90,7 @@ sub _dump {
         $res = "[";
         my $i = 0;
         for (@$val) {
-            $res .= ", " if $i;
+            $res .= "," if $i;
             $res .= _dump($_, "$subscript\[$i]");
             $i++;
         }
@@ -100,7 +99,7 @@ sub _dump {
         $res = "{";
         my $i = 0;
         for (sort keys %$val) {
-            $res .= ", " if $i++;
+            $res .= "," if $i++;
             my $k = /\W/ ? _double_quote($_) : $_;
             my $v = _dump($val->{$_}, "$subscript\{$k}");
             $res .= "$k=>$v";
@@ -116,7 +115,7 @@ sub _dump {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
 
-    $res = "bless($res, "._double_quote($class).")" if defined($class);
+    $res = "bless($res,"._double_quote($class).")" if defined($class);
     $res;
 }
 
@@ -128,12 +127,12 @@ sub _dd_or_dmp {
 
     my $res;
     if (@_ > 1) {
-        $res = "(" . join(", ", map {_dump($_, '')} @_) . ")";
+        $res = "(" . join(",", map {_dump($_, '')} @_) . ")";
     } else {
         $res = _dump($_[0], '');
     }
     if (@_fixups) {
-        $res = "do { my \$a = $res; " . join("", @_fixups) . " \$a }";
+        $res = "do{my\$a=$res;" . join("", @_fixups) . "\$a}";
     }
 
     if ($_is_dd) {
