@@ -152,7 +152,8 @@ sub dmp { goto &_dd_or_dmp }
 =head1 SYNOPSIS
 
  use Data::Dmp; # exports dd() and dmp()
- dd [1, 2, 3];
+ dd [1, 2, 3]; # prints "[1,2,3]"
+ $a = dmp({a => 1}); # -> "{a=>1}"
 
 
 =head1 DESCRIPTION
