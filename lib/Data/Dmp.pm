@@ -67,8 +67,7 @@ sub _dump {
     my $refaddr = refaddr($val);
     $_subscripts{$refaddr} //= $subscript;
     if ($_seen_refaddrs{$refaddr}++) {
-        push @_fixups, " " if @_fixups;
-        push @_fixups, "\$a->$subscript = \$a",
+        push @_fixups, "\$a->$subscript=\$a",
             ($_subscripts{$refaddr} ? "->$_subscripts{$refaddr}" : ""), ";";
         return "'fix'";
     }
@@ -91,7 +90,7 @@ sub _dump {
         $res = "[";
         my $i = 0;
         for (@$val) {
-            $res .= ", " if $i;
+            $res .= "," if $i;
             $res .= _dump($_, "$subscript\[$i]");
             $i++;
         }
@@ -100,7 +99,7 @@ sub _dump {
         $res = "{";
         my $i = 0;
         for (sort keys %$val) {
-            $res .= ", " if $i++;
+            $res .= "," if $i++;
             my $k = /\W/ ? _double_quote($_) : $_;
             my $v = _dump($val->{$_}, "$subscript\{$k}");
             $res .= "$k=>$v";
@@ -116,7 +115,7 @@ sub _dump {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
 
-    $res = "bless($res, "._double_quote($class).")" if defined($class);
+    $res = "bless($res,"._double_quote($class).")" if defined($class);
     $res;
 }
 
@@ -128,12 +127,12 @@ sub _dd_or_dmp {
 
     my $res;
     if (@_ > 1) {
-        $res = "(" . join(", ", map {_dump($_, '')} @_) . ")";
+        $res = "(" . join(",", map {_dump($_, '')} @_) . ")";
     } else {
         $res = _dump($_[0], '');
     }
     if (@_fixups) {
-        $res = "do { my \$a = $res; " . join("", @_fixups) . " \$a }";
+        $res = "do{my\$a=$res;" . join("", @_fixups) . "\$a}";
     }
 
     if ($_is_dd) {
@@ -148,30 +147,27 @@ sub dd { local $_is_dd=1; _dd_or_dmp(@_) } # goto &sub doesn't work here
 sub dmp { goto &_dd_or_dmp }
 
 1;
-# ABSTRACT: Dump Perl data structures
+# ABSTRACT: Dump Perl data structures as Perl code
 
 =head1 SYNOPSIS
 
  use Data::Dmp; # exports dd() and dmp()
- dd [1, 2, 3];
+ dd [1, 2, 3]; # prints "[1,2,3]"
+ $a = dmp({a => 1}); # -> "{a=>1}"
 
 
 =head1 DESCRIPTION
 
-This module, Data::Dmp, is inspired by L<Data::Dump> and is my personal
-experiment. I want some of Data::Dump's features which I currently need and
-don't need the others that I currently do not need. I also want a smaller code
-base so I can easily modify (or subclass) it for custom dumping requirements.
+Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 120
+lines of code long), starts fast and does not use other module except
+L<Regexp::Stringify> when dumping regexes. It produces compact output (similar
+to L<Data::Dumper::Concise>). It's faster than Data::Dumper, but does not offer
+the various formatting options. It supports dumping objects, regexes, circular
+structures. Its code is based on L<Data::Dump>.
 
-Compared to C<Data::Dump>, C<Data::Dmp> is also pure-Perl, dumps Perl data
-structure as runnable Perl code, supports circular/blessed references. Unlike
-C<Data::Dump>, C<Data::Dmp> does not identify tied data, does not support globs,
-does not support filtering, and mostly does not bother to align hash keys,
-identify ranges/repetition pattern. This makes the code simpler.
-
-I originally created C<Data::Dmp> when wanting to write L<Data::Dmp::Org>. At
-first I tried to modify C<Data::Dump>, but then got distracted by the extra bits
-that I don't need.
+It currently does not support "deparse" like Data::Dumper and dumps coderefs as
+C<< sub{'DUMMY'} >>. Unlike Data::Dump, it currently does not support
+identifying tied data or globs.
 
 
 =head1 FUNCTIONS
@@ -198,14 +194,6 @@ L<Regexp::Stringify>. If you set this to, say C<5.010>, then the dumped code
 will keep compatibility with Perl 5.10.0.
 
 
-=head1 BENCHMARKS
-
-Because C<Data::Dmp>'s code is simpler than C<Data::Dump> and it does less,
-Data::Dmp is significantly faster than Data::Dump (around 5 times for some small
-data structures). C<Data::Dmp> is even faster than L<Data::Dumper> for some
-small data structures.
-
-
 =head1 FAQ
 
 =head2 When to use Data::Dmp? How does it compare to other dumper modules?
@@ -216,20 +204,17 @@ code but offers little/no formatting options. Data::Dmp and Data::Dump module
 family usually produce Perl code that is "more eval-able", e.g. it can recreate
 circular structure.
 
-Data::Dump produces nicer output (some alignment, use of range operator to
+L<Data::Dump> produces nicer output (some alignment, use of range operator to
 shorten lists, use of base64 for binary data, etc) but no built-in option to
 produce compact/single-line output. It's also relatively slow. I usually use its
 variant, L<Data::Dump::Color>, for console debugging.
 
-Data::Dumper is core module, offers a lot of formatting options (like disabling
-hash key sorting, setting verboseness/indent level, and so on) but you usually
-have to configure it quite a bit before it does exactly like you want (that's
-why there are modules on CPAN that are just wrapping Data::Dumper with some
-configuration, like L<Data::Dumper::Concise> et al). It does not support dumping
-Perl code that can recreate circular structures.
-
-Currently Data::Dmp does not support "deparse". As for other features, currently
-they are implemented if I personally have the need for them.
+L<Data::Dumper> is core module, offers a lot of formatting options (like
+disabling hash key sorting, setting verboseness/indent level, and so on) but you
+usually have to configure it quite a bit before it does exactly like you want
+(that's why there are modules on CPAN that are just wrapping Data::Dumper with
+some configuration, like L<Data::Dumper::Concise> et al). It does not support
+dumping Perl code that can recreate circular structures.
 
 Of course, dumping to eval-able Perl code is slow (not to mention the cost of
 re-loading the code back to in-memory data, via eval-ing) compared to dumping to

@@ -1,5 +1,21 @@
 Revision history for Data-Dmp
 
+0.10    2015-03-24 (PERLANCAR)
+
+	- No functional changes.
+
+	- Tweak description.
+
+
+0.09    2015-03-24 (PERLANCAR)
+
+        - Add tests (this is the first release that has tests :-$).
+
+        - Produce more compact output (remove whitespaces).
+
+        - Remove Data::Dmp::Simple because this module is not used.
+
+
 0.08    2015-01-06 (PERLANCAR)
 
 	- Use Regexp::Stringify, add setting OPT_PERL_VERSION.
