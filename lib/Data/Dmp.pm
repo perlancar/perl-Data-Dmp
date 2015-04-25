@@ -161,9 +161,10 @@ sub dmp { goto &_dd_or_dmp }
 Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 120
 lines of code long), starts fast and does not use other module except
 L<Regexp::Stringify> when dumping regexes. It produces compact output (similar
-to L<Data::Dumper::Concise>). It's faster than Data::Dumper, but does not offer
-the various formatting options. It supports dumping objects, regexes, circular
-structures. Its code is based on L<Data::Dump>.
+to L<Data::Dumper::Concise>). It roughly has the same speed as Data::Dumper
+(usually a bit faster for smaller structures), but does not offer the various
+formatting options. It supports dumping objects, regexes, circular structures.
+Its code is based on L<Data::Dump>.
 
 It currently does not support "deparse" like Data::Dumper and dumps coderefs as
 C<< sub{'DUMMY'} >>. Unlike Data::Dump, it currently does not support
@@ -192,6 +193,11 @@ Exported by default. Return dump result as string. Unlike C<Data::Dump>'s C<dd>
 Set target Perl version. Currently this is used when passing to
 L<Regexp::Stringify>. If you set this to, say C<5.010>, then the dumped code
 will keep compatibility with Perl 5.10.0.
+
+
+=head1 BENCHMARKS
+
+# COMMAND: devscripts/bench
 
 
 =head1 FAQ
