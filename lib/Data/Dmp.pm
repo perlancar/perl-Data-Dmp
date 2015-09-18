@@ -225,7 +225,10 @@ dumping Perl code that can recreate circular structures.
 Of course, dumping to eval-able Perl code is slow (not to mention the cost of
 re-loading the code back to in-memory data, via eval-ing) compared to dumping to
 JSON, YAML, Sereal, or other format. So you need to decide first whether this is
-the appropriate route you want to take.
+the appropriate route you want to take. (But note that there is also
+L<Data::Dumper::Limited> and L<Data::Undump> which uses a format similar to
+Data::Dumper but lets you load the serialized data without eval-ing them, thus
+achieving the speed comparable to JSON::XS).
 
 
 =head1 SEE ALSO
