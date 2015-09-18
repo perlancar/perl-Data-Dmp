@@ -1,5 +1,12 @@
 Revision history for Data-Dmp
 
+0.12    2015-09-18 (PERLANCAR)
+
+	- No functional changes.
+
+	- [doc] Mention Data::Dumper::Limited & Data::Undump.
+
+
 0.11    2015-04-26 (PERLANCAR)
 
 	- Add benchmark devscript, show the result in POD.
