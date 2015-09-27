@@ -38,7 +38,7 @@ is(dmp({a=>1,"b c"=>2}), q({a=>1,"b c"=>2}));
 }
 
 # code
-is(dmp(sub{}), q(sub{'DUMMY'}));
+like(dmp(sub{my $foo=1}), qr/sub\s*{.*\$foo.*\}/);
 
 # object
 is(dmp(bless({}, "Foo")), q(bless({},"Foo")));

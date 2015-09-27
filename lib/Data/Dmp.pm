@@ -18,7 +18,7 @@ our %_seen_refaddrs;
 our %_subscripts;
 our @_fixups;
 
-our $OPT_PERL_VERSION;
+our $OPT_PERL_VERSION = "5.010";
 
 # BEGIN COPY PASTE FROM Data::Dump
 my %esc = (
@@ -110,7 +110,16 @@ sub _dump {
     } elsif ($ref eq 'REF') {
         $res = "\\"._dump($$val, $subscript);
     } elsif ($ref eq 'CODE') {
-        $res = "sub{'DUMMY'}";
+        require Data::Dumper;
+        local $Data::Dumper::Terse = 1;
+        local $Data::Dumper::Indent = 0;
+        local $Data::Dumper::Deparse = 1;
+        $res = Data::Dumper::Dumper($val);
+        if ($OPT_PERL_VERSION < 5.016) {
+            # older perls' feature.pm doesn't yet support q{no feature ':all';}
+            # so we replace it with q{no feature}.
+            $res =~ s/no feature ':all';/no feature;/m;
+        }
     } else {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
@@ -158,17 +167,13 @@ sub dmp { goto &_dd_or_dmp }
 
 =head1 DESCRIPTION
 
-Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 120
+Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 150
 lines of code long), starts fast and does not use other module except
 L<Regexp::Stringify> when dumping regexes. It produces compact output (similar
 to L<Data::Dumper::Concise>). It roughly has the same speed as Data::Dumper
 (usually a bit faster for smaller structures), but does not offer the various
-formatting options. It supports dumping objects, regexes, circular structures.
-Its code is based on L<Data::Dump>.
-
-It currently does not support "deparse" like Data::Dumper and dumps coderefs as
-C<< sub{'DUMMY'} >>. Unlike Data::Dump, it currently does not support
-identifying tied data or globs.
+formatting options. It supports dumping objects, regexes, circular structures,
+coderefs. Its code is based on L<Data::Dump>.
 
 
 =head1 FUNCTIONS
@@ -188,11 +193,26 @@ Exported by default. Return dump result as string. Unlike C<Data::Dump>'s C<dd>
 
 =head1 SETTINGS
 
-=head2 $Data::Dmp::OPT_PERL_VERSION => str
+=head2 $Data::Dmp::OPT_PERL_VERSION => str (default: 5.010)
 
-Set target Perl version. Currently this is used when passing to
-L<Regexp::Stringify>. If you set this to, say C<5.010>, then the dumped code
-will keep compatibility with Perl 5.10.0.
+Set target Perl version. If you set this to, say C<5.010>, then the dumped code
+will keep compatibility with Perl 5.10.0. This is used in the following ways:
+
+=over
+
+=item * passed to L<Regexp::Stringify>
+
+=item * when dumping code references
+
+For example, in perls earlier than 5.016, feature.pm does not understand:
+
+ no feature ':all';
+
+so we replace it with:
+
+ no feature;
+
+=back
 
 
 =head1 BENCHMARKS
