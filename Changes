@@ -1,5 +1,12 @@
 Revision history for Data-Dmp
 
+0.13    2015-09-27 (PERLANCAR)
+
+        - Support dumping coderefs (using Data::Dumper & Deparse option).
+
+        - Set default for $OPT_PERL_VERSION to 5.010.
+
+
 0.12    2015-09-18 (PERLANCAR)
 
 	- No functional changes.
