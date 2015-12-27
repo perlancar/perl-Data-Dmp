@@ -1,5 +1,11 @@
 Revision history for Data-Dmp
 
+0.14    2015-12-27 (PERLANCAR)
+
+	- By-pass Data::Dumper and use B::Deparse directly to dump
+	  coderefs, add option $OPT_REMOVE_PRAGMAS.
+
+
 0.13    2015-09-27 (PERLANCAR)
 
         - Support dumping coderefs (using Data::Dumper & Deparse option).
