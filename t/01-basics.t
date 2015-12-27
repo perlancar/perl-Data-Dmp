@@ -39,6 +39,14 @@ is(dmp({a=>1,"b c"=>2}), q({a=>1,"b c"=>2}));
 
 # code
 like(dmp(sub{my $foo=1}), qr/sub\s*{.*\$foo.*\}/);
+subtest "OPT_REMOVE_PRAGMAS=1" => sub {
+    local $Data::Dmp::OPT_REMOVE_PRAGMAS = 1;
+    is(dmp(sub{}), 'sub{}');
+    is(dmp(sub{$_[0]<=>$_[1]}), 'sub{$_[0] <=> $_[1]}');
+    is(dmp(sub{ $a = uc($a); $b = uc($b); $a <=> $b; }), 'sub{$a = uc $a;$b = uc $b;$a <=> $b}');
+};
+
+# XXX test OPT_PERL_VERSION
 
 # object
 is(dmp(bless({}, "Foo")), q(bless({},"Foo")));

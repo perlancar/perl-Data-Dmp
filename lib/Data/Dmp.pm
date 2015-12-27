@@ -19,6 +19,7 @@ our %_subscripts;
 our @_fixups;
 
 our $OPT_PERL_VERSION = "5.010";
+our $OPT_REMOVE_PRAGMAS = 0;
 
 # BEGIN COPY PASTE FROM Data::Dump
 my %esc = (
@@ -50,6 +51,35 @@ sub _double_quote {
     return qq("$_");
 }
 # END COPY PASTE FROM Data::Dump
+
+sub _dump_code {
+    my $code = shift;
+
+    state $deparse = do {
+        require B::Deparse;
+        B::Deparse->new("-l"); # -i option doesn't have any effect?
+    };
+
+    my $res = $deparse->coderef2text($code);
+
+    my ($res_before_first_line, $res_after_first_line) =
+        $res =~ /(.+?)^(#line .+)/ms;
+
+    if ($OPT_REMOVE_PRAGMAS) {
+        $res_before_first_line = "{";
+    } elsif ($OPT_PERL_VERSION < 5.016) {
+        # older perls' feature.pm doesn't yet support q{no feature ':all';}
+        # so we replace it with q{no feature}.
+        $res_before_first_line =~ s/no feature ':all';/no feature;/m;
+    }
+    $res_after_first_line =~ s/^#line .+//gm;
+
+    $res = "sub" . $res_before_first_line . $res_after_first_line;
+    $res =~ s/^\s+//gm;
+    $res =~ s/\n+//g;
+    $res =~ s/;\}\z/}/;
+    $res;
+}
 
 sub _dump {
     my ($val, $subscript) = @_;
@@ -110,16 +140,7 @@ sub _dump {
     } elsif ($ref eq 'REF') {
         $res = "\\"._dump($$val, $subscript);
     } elsif ($ref eq 'CODE') {
-        require Data::Dumper;
-        local $Data::Dumper::Terse = 1;
-        local $Data::Dumper::Indent = 0;
-        local $Data::Dumper::Deparse = 1;
-        $res = Data::Dumper::Dumper($val);
-        if ($OPT_PERL_VERSION < 5.016) {
-            # older perls' feature.pm doesn't yet support q{no feature ':all';}
-            # so we replace it with q{no feature}.
-            $res =~ s/no feature ':all';/no feature;/m;
-        }
+        $res = _dump_code($val);
     } else {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
@@ -213,6 +234,20 @@ so we replace it with:
  no feature;
 
 =back
+
+=head2 $Data::Dmp::OPT_REMOVE_PRAGMAS => bool (default: 0)
+
+If set to 1, then pragmas at the start of coderef dump will be removed. Coderef
+dump is produced by L<B::Deparse> and is of the form like:
+
+ sub { use feature 'current_sub', 'evalbytes', 'fc', 'say', 'state', 'switch', 'unicode_strings', 'unicode_eval'; $a <=> $b }
+
+If you want to dump short coderefs, the pragmas might be distracting. You can
+turn turn on this option which will make the above dump become:
+
+ sub { $a <=> $b }
+
+Note that without the pragmas, the dump might be incorrect.
 
 
 =head1 BENCHMARKS
