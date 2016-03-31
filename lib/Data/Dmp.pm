@@ -189,7 +189,7 @@ sub dmp { goto &_dd_or_dmp }
 =head1 DESCRIPTION
 
 Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 175
-lines of code long), starts fast and does not use other module except
+lines of code long), starts fast and does not use any non-core modules except
 L<Regexp::Stringify> when dumping regexes. It produces compact single-line
 output (similar to L<Data::Dumper::Concise>). It roughly has the same speed as
 Data::Dumper (usually a bit faster for smaller structures) and faster than
