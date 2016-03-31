@@ -1,5 +1,14 @@
 Revision history for Data-Dmp
 
+0.15    2016-03-31 (PERLANCAR)
+
+        - No functional changes.
+
+        - [dist] List core modules prereqs.
+
+        - [doc] Tweak description.
+
+
 0.14    2015-12-27 (PERLANCAR)
 
 	- By-pass Data::Dumper and use B::Deparse directly to dump
