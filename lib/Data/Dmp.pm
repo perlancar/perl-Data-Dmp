@@ -188,13 +188,16 @@ sub dmp { goto &_dd_or_dmp }
 
 =head1 DESCRIPTION
 
-Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 150
+Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 175
 lines of code long), starts fast and does not use other module except
-L<Regexp::Stringify> when dumping regexes. It produces compact output (similar
-to L<Data::Dumper::Concise>). It roughly has the same speed as Data::Dumper
-(usually a bit faster for smaller structures), but does not offer the various
-formatting options. It supports dumping objects, regexes, circular structures,
-coderefs. Its code is based on L<Data::Dump>.
+L<Regexp::Stringify> when dumping regexes. It produces compact single-line
+output (similar to L<Data::Dumper::Concise>). It roughly has the same speed as
+Data::Dumper (usually a bit faster for smaller structures) and faster than
+L<Data::Dump>, but does not offer the various formatting options. It supports
+dumping objects, regexes, circular structures, coderefs. Its code is first based
+on L<Data::Dump>: I removed all the parts that I don't need, particularly the
+pretty formatting stuffs) and added some features that I need like proper regex
+dumping and coderef deparsing.
 
 
 =head1 FUNCTIONS
@@ -265,12 +268,13 @@ code but offers little/no formatting options. Data::Dmp and Data::Dump module
 family usually produce Perl code that is "more eval-able", e.g. it can recreate
 circular structure.
 
-L<Data::Dump> produces nicer output (some alignment, use of range operator to
-shorten lists, use of base64 for binary data, etc) but no built-in option to
-produce compact/single-line output. It's also relatively slow. I usually use its
-variant, L<Data::Dump::Color>, for console debugging.
+L<Data::Dump> produces visually nicer output (some alignment, use of range
+operator to shorten lists, use of base64 for binary data, etc) but no built-in
+option to produce compact/single-line output. It's more suitable for debugging.
+It's also relatively slow. I usually use its variant, L<Data::Dump::Color>, for
+console debugging.
 
-L<Data::Dumper> is core module, offers a lot of formatting options (like
+L<Data::Dumper> is a core module, offers a lot of formatting options (like
 disabling hash key sorting, setting verboseness/indent level, and so on) but you
 usually have to configure it quite a bit before it does exactly like you want
 (that's why there are modules on CPAN that are just wrapping Data::Dumper with
