@@ -1,5 +1,11 @@
 Revision history for Data-Dmp
 
+0.16    2016-04-29 (PERLANCAR)
+
+	- [Bugfix] Quote 0123 as "0123" to avoid perl interpreting it as
+	  octal literal.
+
+
 0.15    2016-03-31 (PERLANCAR)
 
         - No functional changes.
