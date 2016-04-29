@@ -13,6 +13,8 @@ is(dmp(undef), "undef");
 # scalar
 is(dmp(""), q[""]);
 is(dmp("\n "), q["\n "]);
+is(dmp("123"), q[123]);
+is(dmp("0123"), q["0123"]);
 
 # scalar ref
 is(dmp(\1), q[\\1]);
@@ -26,7 +28,7 @@ is(dmp([1,2,3]), q([1,2,3]));
 
 # hash
 is(dmp({}), q({}));
-is(dmp({a=>1,"b c"=>2}), q({a=>1,"b c"=>2}));
+is(dmp({"0123"=>3,a=>1,"b c"=>2}), q({"0123"=>3,a=>1,"b c"=>2}));
 
 # circular
 {

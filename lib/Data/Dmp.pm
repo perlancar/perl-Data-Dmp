@@ -88,7 +88,9 @@ sub _dump {
     if ($ref eq '') {
         if (!defined($val)) {
             return "undef";
-        } elsif (looks_like_number($val)) {
+        } elsif (looks_like_number($val) &&
+                     $val !~ /\A0[0-9]+\z/ # avoid being interpreted as octal
+                 ) {
             return $val;
         } else {
             return _double_quote($val);
@@ -130,7 +132,7 @@ sub _dump {
         my $i = 0;
         for (sort keys %$val) {
             $res .= "," if $i++;
-            my $k = /\W/ ? _double_quote($_) : $_;
+            my $k = /\A0[0-9]+\z|\W/ ? _double_quote($_) : $_;
             my $v = _dump($val->{$_}, "$subscript\{$k}");
             $res .= "$k=>$v";
         }
