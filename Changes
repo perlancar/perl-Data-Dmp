@@ -1,5 +1,11 @@
 Revision history for Data-Dmp
 
+0.18    2016-04-30 (PERLANCAR)
+
+	- [Bugfix] Stricter quoting of numbers (only number literal that
+	  would not be normalized is dumped without quotes).
+
+
 0.17    2016-04-30 (PERLANCAR)
 
 	- [Bugfix] Fix quoting criteria of hash key.
