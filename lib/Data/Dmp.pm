@@ -89,9 +89,10 @@ sub _dump {
         if (!defined($val)) {
             return "undef";
         } elsif (looks_like_number($val) &&
-                     # strings like "0123" looks_like_number but must actually
-                     # be quoted to avoid being interpreted as an octal literal
-                     $val !~ /\A0[0-9]+\z/
+                     # perl does several normalizations to number literal, e.g.
+                     # "+1" becomes 1, 0123 is octal literal, etc. make sure we
+                     # only leave out quote when the number is not normalized
+                     $val eq $val+0
                  ) {
             return $val;
         } else {

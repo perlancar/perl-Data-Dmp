@@ -15,7 +15,7 @@ is(dmp(""), q[""]);
 is(dmp("\n "), q["\n "]);
 is(dmp("123"), q[123]);
 is(dmp("0123"), q["0123"]);
-is(dmp("1e2"), q[1e2]);
+is(dmp("1e2"), q["1e2"]);
 
 # scalar ref
 is(dmp(\1), q[\\1]);
