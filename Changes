@@ -1,5 +1,10 @@
 Revision history for Data-Dmp
 
+0.17    2016-04-30 (PERLANCAR)
+
+	- [Bugfix] Fix quoting criteria of hash key.
+
+
 0.16    2016-04-29 (PERLANCAR)
 
 	- [Bugfix] Quote 0123 as "0123" to avoid perl interpreting it as
