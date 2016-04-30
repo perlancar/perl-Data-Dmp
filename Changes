@@ -1,5 +1,11 @@
 Revision history for Data-Dmp
 
+0.19    2016-04-30 (PERLANCAR)
+
+	- [Bugfix] Quote inf/nan because perl doesn't recognize these
+	  numeric literals and they will choke under 'use strict subs'.
+
+
 0.18    2016-04-30 (PERLANCAR)
 
 	- [Bugfix] Stricter quoting of numbers (only number literal that
