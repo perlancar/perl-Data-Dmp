@@ -92,7 +92,11 @@ sub _dump {
                      # perl does several normalizations to number literal, e.g.
                      # "+1" becomes 1, 0123 is octal literal, etc. make sure we
                      # only leave out quote when the number is not normalized
-                     $val eq $val+0
+                     $val eq $val+0 &&
+                     # perl also doesn't recognize Inf and NaN as numeric
+                     # literals (ref: perldata) so these unquoted literals will
+                     # choke under 'use strict "subs"
+                     $val !~ /\A-?(?:inf(?:inity)?|nan)\z/i
                  ) {
             return $val;
         } else {
