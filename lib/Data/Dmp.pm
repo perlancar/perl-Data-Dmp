@@ -89,7 +89,9 @@ sub _dump {
         if (!defined($val)) {
             return "undef";
         } elsif (looks_like_number($val) &&
-                     $val !~ /\A0[0-9]+\z/ # avoid being interpreted as octal
+                     # strings like "0123" looks_like_number but must actually
+                     # be quoted to avoid being interpreted as an octal literal
+                     $val !~ /\A0[0-9]+\z/
                  ) {
             return $val;
         } else {
@@ -132,7 +134,9 @@ sub _dump {
         my $i = 0;
         for (sort keys %$val) {
             $res .= "," if $i++;
-            my $k = /\A0[0-9]+\z|\W/ ? _double_quote($_) : $_;
+            my $k =
+                /\A-?[A-Za-z_][A-Za-z0-9_]*\z/ ||
+                /\A-?[1-9][0-9]{0,8}\z/ ? $_ : _double_quote($_);
             my $v = _dump($val->{$_}, "$subscript\{$k}");
             $res .= "$k=>$v";
         }
