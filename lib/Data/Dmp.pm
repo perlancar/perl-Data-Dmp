@@ -178,7 +178,7 @@ sub _dd_or_dmp {
 
     if ($_is_dd) {
         say $res;
-        return @_;
+        return wantarray() || @_ > 1 ? @_ : $_[0];
     } else {
         return $res;
     }
