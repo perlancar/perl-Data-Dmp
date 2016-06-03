@@ -1,5 +1,11 @@
 Revision history for Data-Dmp
 
+0.20    2016-06-03 (PERLANCAR)
+
+	- Return original result in the case of $var = dd $foo (previously
+	  it will return 1 which is scalar(@_)).
+
+
 0.19    2016-04-30 (PERLANCAR)
 
 	- [Bugfix] Quote inf/nan because perl doesn't recognize these
