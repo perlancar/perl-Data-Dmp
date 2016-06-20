@@ -300,6 +300,11 @@ L<Data::Dumper::Limited> and L<Data::Undump> which uses a format similar to
 Data::Dumper but lets you load the serialized data without eval-ing them, thus
 achieving the speed comparable to JSON::XS).
 
+=head2 Is the output guaranteed to be single line dump?
+
+No. Some things can still produce multiline dump, e.g. newline in regular
+expression.
+
 
 =head1 SEE ALSO
 
