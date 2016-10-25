@@ -50,6 +50,10 @@ subtest "OPT_REMOVE_PRAGMAS=1" => sub {
     is(dmp(sub{$_[0]<=>$_[1]}), 'sub{$_[0] <=> $_[1]}');
     is(dmp(sub{ $a = uc($a); $b = uc($b); $a <=> $b; }), 'sub{$a = uc $a;$b = uc $b;$a <=> $b}');
 };
+subtest "OPT_DEPARSE=0" => sub {
+    local $Data::Dmp::OPT_DEPARSE = 0;
+    is(dmp(sub{}), 'sub{"DUMMY"}');
+};
 
 # XXX test OPT_PERL_VERSION
 

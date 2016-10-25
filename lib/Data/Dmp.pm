@@ -20,6 +20,7 @@ our @_fixups;
 
 our $OPT_PERL_VERSION = "5.010";
 our $OPT_REMOVE_PRAGMAS = 0;
+our $OPT_DEPARSE = 1;
 
 # BEGIN COPY PASTE FROM Data::Dump
 my %esc = (
@@ -151,7 +152,7 @@ sub _dump {
     } elsif ($ref eq 'REF') {
         $res = "\\"._dump($$val, $subscript);
     } elsif ($ref eq 'CODE') {
-        $res = _dump_code($val);
+        $res = $OPT_DEPARSE ? _dump_code($val) : 'sub{"DUMMY"}';
     } else {
         die "Sorry, I can't dump $val (ref=$ref) yet";
     }
@@ -262,6 +263,11 @@ turn turn on this option which will make the above dump become:
  sub { $a <=> $b }
 
 Note that without the pragmas, the dump might be incorrect.
+
+=head2 $Data::Dmp::OPT_DEPARSE => bool (default: 1)
+
+Can be set to 0 to skip deparsing code. Coderefs will be dumped as
+C<sub{"DUMMY"}> instead, like in Data::Dump.
 
 
 =head1 BENCHMARKS
