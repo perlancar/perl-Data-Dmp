@@ -1,5 +1,13 @@
 Revision history for Data-Dmp
 
+0.21    2016-10-26 (PERLANCAR)
+
+	- Add option $OPT_DEPARSE which can be set to 0 to disable
+	  deparsing.
+
+	- Add FAQ about the possibility of multiline dump.
+
+
 0.20    2016-06-03 (PERLANCAR)
 
 	- Return original result in the case of $var = dd $foo (previously
