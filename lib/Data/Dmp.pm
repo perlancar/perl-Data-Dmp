@@ -82,6 +82,11 @@ sub _dump_code {
     $res;
 }
 
+sub _quote_key {
+    $_[0] =~ /\A-?[A-Za-z_][A-Za-z0-9_]*\z/ ||
+        $_[0] =~ /\A-?[1-9][0-9]{0,8}\z/ ? $_[0] : _double_quote($_[0]);
+}
+
 sub _dump {
     my ($val, $subscript) = @_;
 
@@ -140,9 +145,7 @@ sub _dump {
         my $i = 0;
         for (sort keys %$val) {
             $res .= "," if $i++;
-            my $k =
-                /\A-?[A-Za-z_][A-Za-z0-9_]*\z/ ||
-                /\A-?[1-9][0-9]{0,8}\z/ ? $_ : _double_quote($_);
+            my $k = _quote_key($_);
             my $v = _dump($val->{$_}, "$subscript\{$k}");
             $res .= "$k=>$v";
         }
