@@ -21,6 +21,7 @@ our @_fixups;
 our $OPT_PERL_VERSION = "5.010";
 our $OPT_REMOVE_PRAGMAS = 0;
 our $OPT_DEPARSE = 1;
+our $OPT_STRINGIFY_NUMBERS = 0;
 
 # BEGIN COPY PASTE FROM Data::Dump
 my %esc = (
@@ -94,7 +95,7 @@ sub _dump {
     if ($ref eq '') {
         if (!defined($val)) {
             return "undef";
-        } elsif (looks_like_number($val) &&
+        } elsif (looks_like_number($val) && !$OPT_STRINGIFY_NUMBERS &&
                      # perl does several normalizations to number literal, e.g.
                      # "+1" becomes 1, 0123 is octal literal, etc. make sure we
                      # only leave out quote when the number is not normalized
@@ -271,6 +272,12 @@ Note that without the pragmas, the dump might be incorrect.
 
 Can be set to 0 to skip deparsing code. Coderefs will be dumped as
 C<sub{"DUMMY"}> instead, like in Data::Dump.
+
+=head2 $Data::Dmp::OPT_STRINGIFY_NUMBERS => bool (default: 0)
+
+If set to true, will dump numbers as quoted string, e.g. 123 as "123" instead of
+123. This might be helpful if you want to compute the hash of or get a canonical
+representation of data structure.
 
 
 =head1 BENCHMARKS

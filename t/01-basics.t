@@ -18,6 +18,11 @@ is(dmp("0123"), q["0123"]);
 is(dmp("1e2"), q["1e2"]);
 is(dmp("Inf"), q["Inf"]);
 
+subtest "OPT_STRINGIFY_NUMBERS=1" => sub {
+    local $Data::Dmp::OPT_STRINGIFY_NUMBERS = 1;
+    is(dmp("123"), q["123"]);
+};
+
 # scalar ref
 is(dmp(\1), q[\\1]);
 
