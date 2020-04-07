@@ -1,6 +1,8 @@
 package Data::Dmp;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -12,12 +14,14 @@ use Scalar::Util qw(looks_like_number blessed reftype refaddr);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(dd dmp);
+our @EXPORT_OK = qw(dd_ellipsis dmp_ellipsis);
 
 # for when dealing with circular refs
 our %_seen_refaddrs;
 our %_subscripts;
 our @_fixups;
 
+our $OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS = 70;
 our $OPT_PERL_VERSION = "5.010";
 our $OPT_REMOVE_PRAGMAS = 0;
 our $OPT_DEPARSE = 1;
@@ -166,6 +170,7 @@ sub _dump {
 }
 
 our $_is_dd;
+our $_is_ellipsis;
 sub _dd_or_dmp {
     local %_seen_refaddrs;
     local %_subscripts;
@@ -181,6 +186,11 @@ sub _dd_or_dmp {
         $res = "do{my\$a=$res;" . join("", @_fixups) . "\$a}";
     }
 
+    if ($_is_ellipsis) {
+        $res = substr($res, 0, $OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS) . '...'
+            if length($res) > $OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS;
+    }
+
     if ($_is_dd) {
         say $res;
         return wantarray() || @_ > 1 ? @_ : $_[0];
@@ -189,8 +199,11 @@ sub _dd_or_dmp {
     }
 }
 
-sub dd { local $_is_dd=1; _dd_or_dmp(@_) } # goto &sub doesn't work here
+sub dd { local $_is_dd=1; _dd_or_dmp(@_) } # goto &sub doesn't work with local
 sub dmp { goto &_dd_or_dmp }
+
+sub dd_ellipsis { local $_is_dd=1; local $_is_ellipsis=1; _dd_or_dmp(@_) }
+sub dmp_ellipsis { local $_is_ellipsis=1; _dd_or_dmp(@_) }
 
 1;
 # ABSTRACT: Dump Perl data structures as Perl code
@@ -201,10 +214,16 @@ sub dmp { goto &_dd_or_dmp }
  dd [1, 2, 3]; # prints "[1,2,3]"
  $a = dmp({a => 1}); # -> "{a=>1}"
 
+Print truncated dump (capped at L</$Data::Dmp::OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS>
+characters):
+
+ use Data::Dmp qw(dd_ellipsis dmp_ellipsis);
+ dd_ellipsis [1..100];
+
 
 =head1 DESCRIPTION
 
-Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 175
+Data::Dmp is a Perl dumper like L<Data::Dumper>. It's compact (only about 200
 lines of code long), starts fast and does not use any non-core modules except
 L<Regexp::Stringify> when dumping regexes. It produces compact single-line
 output (similar to L<Data::Dumper::Concise>). It roughly has the same speed as
@@ -218,22 +237,52 @@ dumping and coderef deparsing.
 
 =head1 FUNCTIONS
 
-=head2 dd($data, ...) => $data ...
+=head2 dd
+
+Usage:
+
+ dd($data, ...); # returns $data
 
 Exported by default. Like C<Data::Dump>'s C<dd> (a.k.a. C<dump>), print one or
 more data to STDOUT. Unlike C<Data::Dump>'s C<dd>, it I<always> prints and
 return I<the original data> (like L<XXX>), making it convenient to insert into
 expressions. This also removes ambiguity and saves one C<wantarray()> call.
 
-=head2 dmp($data, ...) => $str
+=head2 dmp
+
+Usage:
+
+ my $dump = dmp($data, ...);
 
 Exported by default. Return dump result as string. Unlike C<Data::Dump>'s C<dd>
-(a.k.a. C<dump>), it I<never> prints and only return the data.
+(a.k.a. C<dump>), it I<never> prints and only return the dump result.
+
+=head2 dd_ellipsis
+
+Usage:
+
+ dd_ellipsis($data, ...); # returns data
+
+Just like L</dd>, except will truncate its output to
+L</$Data::Dmp::OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS> characters if dump is too long.
+Note that truncated dump will probably not be valid Perl code.
+
+=head2 dmp_ellipsis
+
+Usage:
+
+ my $dump = dd_ellipsis($data, ...); # returns data
+
+Just like L</dmp>, except will truncate dump result to
+L</$Data::Dmp::OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS> characters if dump is too long.
+Note that truncated dump will probably not be valid Perl code.
 
 
-=head1 SETTINGS
+=head1 VARIABLES
 
-=head2 $Data::Dmp::OPT_PERL_VERSION => str (default: 5.010)
+=head2 $Data::Dmp::OPT_PERL_VERSION
+
+String, default: 5.010.
 
 Set target Perl version. If you set this to, say C<5.010>, then the dumped code
 will keep compatibility with Perl 5.10.0. This is used in the following ways:
@@ -254,7 +303,9 @@ so we replace it with:
 
 =back
 
-=head2 $Data::Dmp::OPT_REMOVE_PRAGMAS => bool (default: 0)
+=head2 $Data::Dmp::OPT_REMOVE_PRAGMAS
+
+Bool, default: 0.
 
 If set to 1, then pragmas at the start of coderef dump will be removed. Coderef
 dump is produced by L<B::Deparse> and is of the form like:
@@ -268,16 +319,26 @@ turn turn on this option which will make the above dump become:
 
 Note that without the pragmas, the dump might be incorrect.
 
-=head2 $Data::Dmp::OPT_DEPARSE => bool (default: 1)
+=head2 $Data::Dmp::OPT_DEPARSE
+
+Bool, default: 1.
 
 Can be set to 0 to skip deparsing code. Coderefs will be dumped as
 C<sub{"DUMMY"}> instead, like in Data::Dump.
 
-=head2 $Data::Dmp::OPT_STRINGIFY_NUMBERS => bool (default: 0)
+=head2 $Data::Dmp::OPT_STRINGIFY_NUMBERS
+
+Bool, default: 0.
 
 If set to true, will dump numbers as quoted string, e.g. 123 as "123" instead of
 123. This might be helpful if you want to compute the hash of or get a canonical
 representation of data structure.
+
+=head2 $Data::Dmp::OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS
+
+Int, default: 70.
+
+Used by L</dd_ellipsis> and L</dmp_ellipsis>.
 
 
 =head1 BENCHMARKS
