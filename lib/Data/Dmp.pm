@@ -60,6 +60,14 @@ sub _double_quote {
 }
 # END COPY PASTE FROM Data::Dump
 
+# BEGIN COPY PASTE FROM String::PerlQuote
+sub _single_quote {
+    local($_) = $_[0];
+    s/([\\'])/\\$1/g;
+    return qq('$_');
+}
+# END COPY PASTE FROM String::PerlQuote
+
 sub _dump_code {
     my $code = shift;
 
@@ -119,9 +127,10 @@ sub _dump {
     my $refaddr = refaddr($val);
     $_subscripts{$refaddr} //= $subscript;
     if ($_seen_refaddrs{$refaddr}++) {
-        push @_fixups, "\$a->$subscript=\$a",
-            ($_subscripts{$refaddr} ? "->$_subscripts{$refaddr}" : ""), ";";
-        return "'fix'";
+        my $target = "\$var" .
+            ($_subscripts{$refaddr} ? "->$_subscripts{$refaddr}" : "");
+        push @_fixups, "\$var->$subscript=$target;";
+        return _single_quote($target);
     }
 
     my $class;
@@ -185,7 +194,7 @@ sub _dd_or_dmp {
         $res = _dump($_[0], '');
     }
     if (@_fixups) {
-        $res = "do{my\$a=$res;" . join("", @_fixups) . "\$a}";
+        $res = "do{my\$var=$res;" . join("", @_fixups) . "\$var}";
     }
 
     if ($_is_ellipsis) {
@@ -214,7 +223,7 @@ sub dmp_ellipsis { local $_is_ellipsis=1; _dd_or_dmp(@_) }
 
  use Data::Dmp; # exports dd() and dmp()
  dd [1, 2, 3]; # prints "[1,2,3]"
- $a = dmp({a => 1}); # -> "{a=>1}"
+ $var = dmp({a => 1}); # -> "{a=>1}"
 
 Print truncated dump (capped at L</$Data::Dmp::OPT_MAX_DUMP_LEN_BEFORE_ELLIPSIS>
 characters):
