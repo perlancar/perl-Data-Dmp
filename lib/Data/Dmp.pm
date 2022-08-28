@@ -167,7 +167,11 @@ sub _dump {
         }
         $res .= "}";
     } elsif ($ref eq 'SCALAR') {
-        $res = "\\"._dump($$val, $subscript);
+        if (defined $class) {
+            $res = "do{my\$o="._dump($$val, $subscript).";\\\$o}";
+        } else {
+            $res = "\\"._dump($$val, $subscript);
+        }
     } elsif ($ref eq 'REF') {
         $res = "\\"._dump($$val, $subscript);
     } elsif ($ref eq 'CODE') {
