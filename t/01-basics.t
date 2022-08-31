@@ -68,7 +68,8 @@ subtest "OPT_DEPARSE=0" => sub {
 
 # object
 is(dmp(bless({}, "Foo")), q(bless({},"Foo")));
-is(dmp(bless(do{my$o=1;\$o}, "Foo")), q(bless(do{my$o=1;\\$o},"Foo")));
+is(dmp(bless(do{my$o=1;\$o}, "Foo")),     q(bless(do{my$o=1;\\$o},"Foo")));
+is(dmp(bless(do{my$o=undef;\$o}, "Foo")), q(bless(do{my$o=undef;\\$o},"Foo")));
 
 # regexp
 is(dmp(qr/abc/i), q{qr(abc)i});
