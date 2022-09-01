@@ -2,3 +2,4 @@ Data-Dmp-*
 .build
 *~
 nytprof*
+.DS_Store
