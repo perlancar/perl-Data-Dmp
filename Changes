@@ -1,8 +1,8 @@
 0.242   2022-08-28  Released-By: PERLANCAR; Urgency: high
 
-        - [bugfix] Avoid 'Modification of a read-only value attempted'
-          error because we still dumped a scalarref object as
-          bless(\1,'Foo').
+        - [bugfix] Avoid 'Modification of a read-only value attempted' error
+          because we still dumped a scalarref object as bless(\1,'Foo') when we
+          should have dumped it as bless(do{my$o=1;\$o},'Foo').
 
 
 0.241   2021-06-24  Released-By: PERLANCAR; Urgency: medium
